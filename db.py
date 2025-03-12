@@ -7,9 +7,9 @@ def conectar():
     try:
         conexion = mysql.connector.connect(
         #agregar los datos que tengan en su mysql workbech
-        user='root',
-        password='7894',
-        host='127.0.0.1',
+        user='remote',
+        password='1234',
+        host='192.168.113.162',
         database='tallerdb',
         port='3306'
             )
