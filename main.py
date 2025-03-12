@@ -2,12 +2,20 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from models import Cliente, Servicio, Cita, CitaRequest
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 import crud
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="frontend", html=True), name="frontend")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Puedes cambiar "*" por la URL exacta de tu frontend
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
+    allow_headers=["*"],  # Permite todos los headers
+)
 
 @app.get("/")
 def serve_index():
