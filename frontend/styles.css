@@ -1,0 +1,119 @@
+/* Estilos generales */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, #007BFF, #00A5FF);
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Encabezado */
+header {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Contenedor principal con flexbox */
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 40px auto;
+    gap: 30px;
+    padding: 20px;
+}
+
+/* Formulario a la izquierda */
+.form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Calendario a la derecha */
+.calendar-container {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    min-width: 600px;
+    text-align: center;
+}
+
+/* Estilos para títulos */
+h1, h2 {
+    color: #090909;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos del formulario */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: left;
+}
+
+input, select {
+    padding: 12px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+}
+
+input:focus, select:focus {
+    border-color: #007BFF;
+    box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Botón */
+button {
+    background: linear-gradient(to right, #007BFF, #00A5FF);
+    color: white;
+    border: none;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: linear-gradient(to right, #0056b3, #0080ff);
+    transform: translateY(-2px);
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-container {
+        max-width: 100%;
+    }
+
+    .calendar-container {
+        min-width: 100%;
+    }
+}

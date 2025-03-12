@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPB-Taller - Agenda de Citas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>UPB-Taller - Agenda de Citas</h1>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="form-container">
+                <h2>Agendar Cita</h2>
+                <form id="appointmentForm">
+                    <label for="clientId">ID Cliente:</label>
+                    <input type="number" id="clientId" name="clientId" placeholder="Cédula o ID">
+                    <button type="button" id="searchClient">Buscar Cliente</button>
+
+                    <label for="clientName">Nombre:</label>
+                    <input type="text" id="clientName" name="clientName" placeholder="Nombre completo">
+
+                    <label for="clientPhone">Teléfono:</label>
+                    <input type="text" id="clientPhone" name="clientPhone" placeholder="Número de teléfono">
+
+                    <label for="clientEmail">Correo:</label>
+                    <input type="email" id="clientEmail" name="clientEmail" placeholder="Correo electrónico">
+
+                    <label for="service">Servicio:</label>
+                    <select id="service" name="service">
+                        <!-- Los servicios se cargarán desde la API -->
+                    </select>
+
+                    <label for="date">Fecha:</label>
+                    <input type="datetime-local" id="date" name="date">
+
+                    <button type="submit">Agendar Cita</button>
+                </form>
+            </section>
+
+            <section class="calendar-container">
+                <h2>Disponibilidad del Taller</h2>
+                <div id="calendar"></div>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
