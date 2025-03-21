@@ -18,22 +18,27 @@
             <section class="form-container">
                 <h2>Agendar Cita</h2>
                 <form id="appointmentForm">
-                    <label for="clientId">ID Cliente:</label>
-                    <input type="number" id="clientId" name="clientId" placeholder="Cédula o ID">
+                    <label for="clientId">ID Cliente (Cédula):</label>
+                    <input type="text" id="clientId" name="clientId" placeholder="Ingrese la cédula">
                     <button type="button" id="searchClient">Buscar Cliente</button>
 
                     <label for="clientName">Nombre:</label>
-                    <input type="text" id="clientName" name="clientName" placeholder="Nombre completo">
+                    <input type="text" id="clientName" name="clientName" placeholder="Nombre completo" readonly>
 
                     <label for="clientPhone">Teléfono:</label>
-                    <input type="text" id="clientPhone" name="clientPhone" placeholder="Número de teléfono">
+                    <input type="text" id="clientPhone" name="clientPhone" placeholder="Número de teléfono" readonly>
 
-                    <label for="clientEmail">Correo:</label>
-                    <input type="email" id="clientEmail" name="clientEmail" placeholder="Correo electrónico">
+                    <label for="clientAddress">Dirección:</label>
+                    <input type="text" id="clientAddress" name="clientAddress" placeholder="Dirección" readonly>
+
+                    <label for="car">Carro:</label>
+                    <select id="car" name="car">
+                        <!-- Se cargarán desde la API -->
+                    </select>
 
                     <label for="service">Servicio:</label>
                     <select id="service" name="service">
-                        <!-- Los servicios se cargarán desde la API -->
+                        <!-- Se cargarán desde la API -->
                     </select>
 
                     <label for="date">Fecha:</label>
