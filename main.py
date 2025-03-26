@@ -4,6 +4,8 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
+import uvicorn
+import os
 
 from database import get_db
 import schemas  # Esquemas Pydantic para validación de datos
@@ -141,3 +143,8 @@ def login_usuario(usuario: schemas.UsuarioLogin):
 
 
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8000))  # Usa el puerto de Railway o 8000 por defecto
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
