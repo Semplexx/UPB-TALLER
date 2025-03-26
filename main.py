@@ -80,7 +80,8 @@ def obtener_servicio_por_id(id: int):
         raise HTTPException(status_code=404, detail="Servicio no encontrado")
     db.close()
     return servicio
-# ----- carros -----
+
+# ---------------------- CARROS ----------------------
 @app.get("/carros/")
 def obtener_carros():
     db = get_db_session()
@@ -90,20 +91,17 @@ def obtener_carros():
     return [dict(row._mapping) for row in carros]
 
 #obtener carro por placa
-@app.get("/carros/{placa}")
+@app.get("/carros/placas/{placa}")
 def obtener_carro_por_placa(placa: str):
     db = get_db_session()
     carro = crud.obtener_carro_placa(db, placa)
     return carro
 
-
-
-
-
-
-
-
-
+@app.get("/carros/{id}")
+def obtener_carro_por_id(id: str):
+    db = get_db_session()
+    carro = crud.obtener_carro_id(db, id)
+    return carro
 
 # ---------------------- CITAS ----------------------
 @app.post("/citas/")

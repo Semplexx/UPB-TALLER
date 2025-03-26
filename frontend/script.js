@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            let carro = await fetchData(`http://localhost:8000/carros/${carPlate}`);
+            let carro = await fetchData(`http://localhost:8000/carros/placas/${carPlate}`);
             document.getElementById("carModel").value = carro.modelo || "";
             document.getElementById("carBrand").value = carro.marca || "";
             document.getElementById("carId").value = carro.id || "";
@@ -145,4 +145,69 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     populateServices();
+
+    document.getElementById("getCitas").addEventListener("click", async function () {
+        try {
+            const response = await fetch("http://localhost:8000/citas/");
+            if (!response.ok) {
+                throw new Error("Error al obtener los datos de la API");
+            }
+            const citas = await response.json();
+            
+            if (citas.length === 0) {
+                alert("No hay citas registradas");
+                return;
+            }
+    
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Agregar logo en la esquina superior derecha
+            const logo = new Image();
+            logo.src = "./Logo/Logo_Empresa.png"; // Asegúrate de que el archivo esté accesible
+            await new Promise((resolve) => {
+                logo.onload = resolve;
+            });
+            doc.addImage(logo, "PNG", 150, 5, 50, 50);
+    
+            doc.setFontSize(24);
+            doc.text("Reporte de Citas", 10, 30);
+            doc.setFontSize(12);
+    
+            let y = 50;
+            for (const cita of citas) {
+                // Obtener detalles del cliente
+                const clienteResponse = await fetch(`http://localhost:8000/clientes/${cita.id_cliente}`);
+                const cliente = clienteResponse.ok ? await clienteResponse.json() : { nombre: "Desconocido" };
+    
+                // Obtener detalles del carro
+                const carroResponse = await fetch(`http://localhost:8000/carros/${cita.id_carro}`);
+                const carro = carroResponse.ok ? await carroResponse.json() : { marca: "N/A", modelo: "N/A", placa: "N/A" };
+    
+                // Obtener detalles del servicio
+                const servicioResponse = await fetch(`http://localhost:8000/servicios/${cita.id_servicio}`);
+                const servicio = servicioResponse.ok ? await servicioResponse.json() : { nombre: "Desconocido" };
+    
+                doc.text(`Cliente: ${cliente.nombre} (ID: ${cita.id_cliente})`, 10, y);
+                doc.text(`Carro: ${carro.marca} ${carro.modelo} - Placa: ${carro.placa}`, 10, y + 6);
+                doc.text(`Servicio: ${servicio.nombre} - Costo: $${cita.total}`, 10, y + 12);
+                doc.text(`Duración: ${cita.duracion_total} min`, 10, y + 18);
+                doc.text(`Fecha: ${cita.fecha}`, 10, y + 24);
+                doc.line(10, y + 26, 200, y + 26);
+                y += 30;
+                
+                if (y > 270) { // Salto de página si es necesario
+                    doc.addPage();
+                    y = 20;
+                }
+            }
+    
+            doc.save("reporte_citas.pdf");
+        } catch (error) {
+            console.error("Error al generar el reporte:", error);
+            alert("Hubo un problema al generar el reporte");
+        }
+    });
+    
+    
 });
