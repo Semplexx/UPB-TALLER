@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import Cliente, Servicio, Cita
+from models import Cliente, Servicio, Cita, Carro
 from schemas import ClienteCreate, ServicioCreate, CitaCreate, ServicioSchema
 
 # ---------------- CLIENTES ----------------
@@ -54,3 +54,12 @@ def obtener_citas(db: Session):
 
 def obtener_citas_cliente(db: Session, id_cliente: int):
     return db.query(Cita).filter(Cita.id_cliente == id_cliente).all()
+
+
+# ----- carros
+def obtener_carro_id(db: Session, id: int):
+    return db.query(Carro).filter(Carro.id == id).first()
+
+def obtener_carro_placa(db: Session, placa: str):
+    return db.query(Carro).filter(Carro.placa == placa).first()
+

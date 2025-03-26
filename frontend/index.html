@@ -31,15 +31,25 @@
                     <label for="clientAddress">Dirección:</label>
                     <input type="text" id="clientAddress" name="clientAddress" placeholder="Dirección" readonly>
 
-                    <label for="car">Carro:</label>
-                    <select id="car" name="car">
-                        <!-- Se cargarán desde la API -->
-                    </select>
+                    <label for="carPlate">Placa del Carro:</label>
+                    <input type="text" id="carPlate" name="carPlate" placeholder="Ingrese la placa del carro">
+                    <button type="button" id="searchCar">Buscar Carro</button>
+
+                    <label for="carModel">Modelo del Carro:</label>
+                    <input type="text" id="carModel" name="carModel" placeholder="Ingrese el modelo del carro">
+
+                    <label for="carBrand">Marca del Carro:</label>
+                    <input type="text" id="carBrand" name="carBrand" placeholder="Ingrese la marca del carro">
+
+                    <input type="hidden" id="carId" name="carId">
 
                     <label for="service">Servicio:</label>
                     <select id="service" name="service">
                         <!-- Se cargarán desde la API -->
                     </select>
+
+                    <input type="hidden" id="total" name="total">
+                    <input type="hidden" id="duration" name="duration" value="30">
 
                     <label for="date">Fecha:</label>
                     <input type="datetime-local" id="date" name="date">

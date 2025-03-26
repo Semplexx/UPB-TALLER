@@ -6,139 +6,124 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     calendar.render();
 
-    // Obtener los servicios desde la API
-    fetch("http://localhost:8000/servicios/")
-        .then((response) => response.json())
-        .then((data) => {
+    async function fetchData(url) {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error("Error fetching data");
+        }
+        return response.json();
+    }
+
+    async function populateServices() {
+        try {
+            const data = await fetchData("http://localhost:8000/servicios/");
             let serviceSelect = document.getElementById("service");
             data.forEach((service) => {
                 let option = document.createElement("option");
                 option.value = service.id;
-                option.textContent = service.nombre;
+                option.textContent = `${service.nombre} - $${service.costo}`;
+                option.setAttribute("data-precio", service.costo);
                 serviceSelect.appendChild(option);
             });
-        });
+        } catch (error) {
+            alert("Error al cargar los servicios");
+        }
+    }
 
-    // Buscar cliente por ID y cargar sus datos
-    document.getElementById("searchClient").addEventListener("click", function () {
+    document.getElementById("searchClient").addEventListener("click", async function () {
         let clientId = document.getElementById("clientId").value.trim();
         if (!clientId) {
             alert("Ingrese un ID de cliente válido.");
             return;
         }
 
-        fetch(`http://localhost:8000/clientes/${clientId}`)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Cliente no encontrado");
-                }
-                return response.json();
-            })
-            .then((cliente) => {
-                document.getElementById("clientName").value = cliente.nombre;
-                document.getElementById("clientPhone").value = cliente.telefono;
-                document.getElementById("clientAddress").value = cliente.direccion;
-
-                // Cargar los carros del cliente
-                return fetch(`http://localhost:8000/clientes/${clientId}/carros`);
-            })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("No se encontraron carros para este cliente.");
-                }
-                return response.json();
-            })
-            .then((carros) => {
-                let carSelect = document.getElementById("car");
-                carSelect.innerHTML = ""; // Limpiar opciones previas
-                carros.forEach((carro) => {
-                    let option = document.createElement("option");
-                    option.value = carro.id;
-                    option.textContent = `${carro.marca} - ${carro.modelo} (${carro.placa})`;
-                    carSelect.appendChild(option);
-                });
-            })
-            .catch((error) => {
-                alert(error.message);
-                document.getElementById("clientName").value = "";
-                document.getElementById("clientPhone").value = "";
-                document.getElementById("clientAddress").value = "";
-                document.getElementById("car").innerHTML = "";
-            });
+        try {
+            let cliente = await fetchData(`http://localhost:8000/clientes/${clientId}`);
+            document.getElementById("clientName").value = cliente.nombre;
+            document.getElementById("clientPhone").value = cliente.telefono;
+            document.getElementById("clientAddress").value = cliente.direccion;
+        } catch {
+            alert("Cliente no encontrado");
+            document.getElementById("clientName").value = "";
+            document.getElementById("clientPhone").value = "";
+            document.getElementById("clientAddress").value = "";
+        }
     });
 
-    // Enviar formulario de cita
+    document.getElementById("searchCar").addEventListener("click", async function () {
+        let carPlate = document.getElementById("carPlate").value.trim();
+        if (!carPlate) {
+            alert("Ingrese una placa válida.");
+            return;
+        }
+
+        try {
+            let carro = await fetchData(`http://localhost:8000/carros/${carPlate}`);
+            document.getElementById("carModel").value = carro.modelo || "";
+            document.getElementById("carBrand").value = carro.marca || "";
+            document.getElementById("carId").value = carro.id || "";
+        } catch {
+            alert("Carro no encontrado. Ingrese los datos para crear uno nuevo.");
+            document.getElementById("carModel").value = "";
+            document.getElementById("carBrand").value = "";
+        }
+    });
+
     document.getElementById("appointmentForm").addEventListener("submit", async function (event) {
         event.preventDefault();
 
         try {
-            // Capturar valores del formulario
-            let clientId = document.getElementById("clientId")?.value?.trim();
-            let clientName = document.getElementById("clientName")?.value?.trim();
-            let clientPhone = document.getElementById("clientPhone")?.value?.trim();
-            let clientAddress = document.getElementById("clientAddress")?.value?.trim();
-            let serviceId = document.getElementById("service")?.value?.trim();
-            let carId = document.getElementById("car")?.value?.trim();
-            let date = document.getElementById("date")?.value?.trim();
+            let clientId = document.getElementById("clientId").value.trim();
+            let clientName = document.getElementById("clientName").value.trim();
+            let clientPhone = document.getElementById("clientPhone").value.trim();
+            let clientAddress = document.getElementById("clientAddress").value.trim();
+            let carPlate = document.getElementById("carPlate").value.trim();
+            let carModel = document.getElementById("carModel").value.trim();
+            let carBrand = document.getElementById("carBrand").value.trim();
+            let carId = document.getElementById("carId").value.trim();
+            let serviceSelect = document.getElementById("service");
+            let serviceId = serviceSelect.value.trim();
+            let date = document.getElementById("date").value.trim();
 
-            // Validar que todos los campos estén completos
-            if (!clientId || !clientName || !clientPhone || !clientAddress || !serviceId || !carId || !date) {
+            if (!clientName || !clientPhone || !clientAddress || !serviceId || !date) {
                 alert("Por favor, complete todos los campos obligatorios.");
                 return;
             }
 
-            let clienteExiste = false;
-
-            // Verificar si el cliente ya existe
-            let clienteResponse = await fetch(`http://localhost:8000/clientes/${clientId}`);
-            if (clienteResponse.ok) {
-                clienteExiste = true;
-            }
-
-            if (!clienteExiste) {
-                // Crear el cliente si no existe
-                let nuevoClienteData = {
-                    id: clientId,
-                    nombre: clientName,
-                    telefono: clientPhone,
-                    direccion: clientAddress,
+            if (!carId && carPlate && carModel && carBrand) {
+                let nuevoCarroData = {
+                    placa: carPlate,
+                    modelo: carModel,
+                    marca: carBrand,
+                    id_cliente: clientId,
                 };
 
-                let nuevoClienteResponse = await fetch("http://localhost:8000/clientes/", {
+                let nuevoCarroResponse = await fetch("http://localhost:8000/carros/", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(nuevoClienteData),
+                    body: JSON.stringify(nuevoCarroData),
                 });
 
-                if (!nuevoClienteResponse.ok) {
-                    let errorMsg = await nuevoClienteResponse.text();
-                    throw new Error(`Error al crear el cliente: ${errorMsg}`);
+                if (!nuevoCarroResponse.ok) {
+                    let errorMsg = await nuevoCarroResponse.text();
+                    throw new Error(`Error al crear el carro: ${errorMsg}`);
                 }
 
-                // Esperar 1 segundo antes de continuar
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-
-                let confirmCliente = await fetch(`http://localhost:8000/clientes/${clientId}`);
-                if (!confirmCliente.ok) {
-                    throw new Error("Error al verificar la creación del cliente. Intente nuevamente.");
-                }
+                let nuevoCarro = await nuevoCarroResponse.json();
+                carId = nuevoCarro.id;
             }
 
-            // Obtener información del servicio
-            let serviceResponse = await fetch(`http://localhost:8000/servicios/${serviceId}`);
-            if (!serviceResponse.ok) {
-                throw new Error("Servicio no encontrado");
-            }
-            let servicio = await serviceResponse.json();
+            // 🔑 Obtener el precio del servicio seleccionado
+            let selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+            let total = parseFloat(selectedOption.getAttribute("data-precio")) || 0;
 
-            // Crear la cita con los datos obtenidos
             let appointmentData = {
                 id_cliente: clientId,
                 id_servicio: parseInt(serviceId),
-                id_carro: parseInt(carId),
-                total: servicio.costo,
-                duracion_total: servicio.duracion,
+                id_carro: carId,
                 fecha: date,
+                total: total, // Actualizado con el precio del servicio
+                duracion_total: 30 // O el valor necesario según tu modelo
             };
 
             let citaResponse = await fetch("http://localhost:8000/citas/", {
@@ -153,10 +138,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             alert("Cita agendada con éxito");
-            calendar.refetchEvents(); // Recargar eventos en el calendario
-
+            calendar.refetchEvents();
         } catch (error) {
             alert(error.message);
         }
     });
+
+    populateServices();
 });
