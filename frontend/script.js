@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var calendarEl = document.getElementById("calendar");
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
-        events: "upb-taller-production.up.railway.app/citas/",
+        events: "https://upb-taller-production.up.railway.app/citas/",
     });
     calendar.render();
 
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function populateServices() {
         try {
-            const data = await fetchData("upb-taller-production.up.railway.app/servicios/");
+            const data = await fetchData("https://upb-taller-production.up.railway.app/servicios/");
             let serviceSelect = document.getElementById("service");
             data.forEach((service) => {
                 let option = document.createElement("option");
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            let cliente = await fetchData(`upb-taller-production.up.railway.app/clientes/${clientId}`);
+            let cliente = await fetchData(`https://upb-taller-production.up.railway.app/clientes/${clientId}`);
             document.getElementById("clientName").value = cliente.nombre;
             document.getElementById("clientPhone").value = cliente.telefono;
             document.getElementById("clientAddress").value = cliente.direccion;
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            let carro = await fetchData(`upb-taller-production.up.railway.app/carros/placas/${carPlate}`);
+            let carro = await fetchData(`https://upb-taller-production.up.railway.app/carros/placas/${carPlate}`);
             document.getElementById("carModel").value = carro.modelo || "";
             document.getElementById("carBrand").value = carro.marca || "";
             document.getElementById("carId").value = carro.id || "";
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     id_cliente: clientId,
                 };
 
-                let nuevoCarroResponse = await fetch("upb-taller-production.up.railway.app/carros/", {
+                let nuevoCarroResponse = await fetch("https://upb-taller-production.up.railway.app/carros/", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(nuevoCarroData),
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 duracion_total: 30 // O el valor necesario según tu modelo
             };
 
-            let citaResponse = await fetch("upb-taller-production.up.railway.app/citas/", {
+            let citaResponse = await fetch("https://upb-taller-production.up.railway.app/citas/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(appointmentData),
@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("getCitas").addEventListener("click", async function () {
         try {
-            const response = await fetch("upb-taller-production.up.railway.app/citas/");
+            const response = await fetch("https://upb-taller-production.up.railway.app/citas/");
             if (!response.ok) {
                 throw new Error("Error al obtener los datos de la API");
             }
@@ -177,15 +177,15 @@ document.addEventListener("DOMContentLoaded", function () {
             let y = 50;
             for (const cita of citas) {
                 // Obtener detalles del cliente
-                const clienteResponse = await fetch(`upb-taller-production.up.railway.app/clientes/${cita.id_cliente}`);
+                const clienteResponse = await fetch(`https://upb-taller-production.up.railway.app/clientes/${cita.id_cliente}`);
                 const cliente = clienteResponse.ok ? await clienteResponse.json() : { nombre: "Desconocido" };
     
                 // Obtener detalles del carro
-                const carroResponse = await fetch(`upb-taller-production.up.railway.app/carros/${cita.id_carro}`);
+                const carroResponse = await fetch(`https://upb-taller-production.up.railway.app/carros/${cita.id_carro}`);
                 const carro = carroResponse.ok ? await carroResponse.json() : { marca: "N/A", modelo: "N/A", placa: "N/A" };
     
                 // Obtener detalles del servicio
-                const servicioResponse = await fetch(`upb-taller-production.up.railway.app/servicios/${cita.id_servicio}`);
+                const servicioResponse = await fetch(`https://upb-taller-production.up.railway.app/servicios/${cita.id_servicio}`);
                 const servicio = servicioResponse.ok ? await servicioResponse.json() : { nombre: "Desconocido" };
     
                 doc.text(`Cliente: ${cliente.nombre} (ID: ${cita.id_cliente})`, 10, y);
