@@ -6,6 +6,25 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     calendar.render();
 
+    function mostrarCitasDelDia(fechaSeleccionada) {
+        const citasFiltradas = citas.filter(cita => cita.fecha.startsWith(fechaSeleccionada));
+        const citasContainer = document.getElementById("citasDia");
+
+        citasContainer.innerHTML = `<h3>Citas para el ${fechaSeleccionada}:</h3>`;
+
+        if (citasFiltradas.length === 0) {
+            citasContainer.innerHTML += "<p>No hay citas programadas para este día.</p>";
+        } else {
+            const lista = document.createElement("ul");
+            citasFiltradas.forEach(cita => {
+                const item = document.createElement("li");
+                item.textContent = `Cita ID: ${cita.id}, Cliente: ${cita.id_cliente}, Servicio: ${cita.id_servicio}, Hora: ${cita.fecha.split("T")[1]}`;
+                lista.appendChild(item);
+            });
+            citasContainer.appendChild(lista);
+        }
+    }
+
     async function fetchData(url) {
         const response = await fetch(url);
         if (!response.ok) {
