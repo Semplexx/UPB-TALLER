@@ -3,27 +3,11 @@ document.addEventListener("DOMContentLoaded", function () {
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
         events: "https://upb-taller-production.up.railway.app/citas/",
+        dateClick: async function (info) {
+            await mostrarCitasPorFecha(info.dateStr);
+        }
     });
     calendar.render();
-
-    function mostrarCitasDelDia(fechaSeleccionada) {
-        const citasFiltradas = citas.filter(cita => cita.fecha.startsWith(fechaSeleccionada));
-        const citasContainer = document.getElementById("citasDia");
-
-        citasContainer.innerHTML = `<h3>Citas para el ${fechaSeleccionada}:</h3>`;
-
-        if (citasFiltradas.length === 0) {
-            citasContainer.innerHTML += "<p>No hay citas programadas para este día.</p>";
-        } else {
-            const lista = document.createElement("ul");
-            citasFiltradas.forEach(cita => {
-                const item = document.createElement("li");
-                item.textContent = `Cita ID: ${cita.id}, Cliente: ${cita.id_cliente}, Servicio: ${cita.id_servicio}, Hora: ${cita.fecha.split("T")[1]}`;
-                lista.appendChild(item);
-            });
-            citasContainer.appendChild(lista);
-        }
-    }
 
     async function fetchData(url) {
         const response = await fetch(url);
@@ -31,6 +15,25 @@ document.addEventListener("DOMContentLoaded", function () {
             throw new Error("Error fetching data");
         }
         return response.json();
+    }
+
+    async function mostrarCitasPorFecha(fecha) {
+        try {
+            const citas = await fetchData(`https://upb-taller-production.up.railway.app/citas/fecha/${fecha}`);
+            if (citas.length === 0) {
+                alert("No hay citas para esta fecha");
+                return;
+            }
+
+            let mensaje = `Citas para el ${fecha}:\n`;
+            for (const cita of citas) {
+                mensaje += `\n- Cliente ID: ${cita.id_cliente}, Servicio ID: ${cita.id_servicio}, Hora: ${cita.fecha}`;
+            }
+
+            alert(mensaje);
+        } catch (error) {
+            alert("Error al obtener citas para esta fecha.");
+        }
     }
 
     async function populateServices() {
