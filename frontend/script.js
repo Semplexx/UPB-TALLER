@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         doc.save(`Factura_Cita_${citaId}.pdf`);
                         document.getElementById("modal").style.display = "none"; // Cierra el modal
                     } catch (err) {
-                        showModal("Error al generar la factura.");
+                        //showModal("Error al generar la factura.");
                         console.error(err);
                     }
                 });
@@ -135,7 +135,8 @@ document.addEventListener("DOMContentLoaded", function () {
         citaSeleccionada = parseInt(seleccion.value);
     
         const cita = await fetchData(`https://upb-taller-production.up.railway.app/citas/${citaSeleccionada}`);
-    
+        console.log(cita);
+
         if (cita) {
             // Aquí va la lógica de generar factura (con jsPDF o lo que tengas)
             showModal("✅ Factura generada con éxito");
