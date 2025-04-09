@@ -38,9 +38,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     </li>`;
             }
             mensaje += `</ul>
-                <button type="button" id="confirmarCitaSeleccionada">Seleccionar cita</button>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button type="button" id="confirmarCitaSeleccionada">Seleccionar cita</button>
+                    <button type="button" id="generarFacturaBtn">Generar Factura</button>
+                </div>
             </form>`;
-    
+
             showModal(mensaje);
     
             // Esperar a que el botón se cargue en el DOM y luego asignar evento
@@ -53,6 +56,56 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     citaSeleccionada = parseInt(seleccion.value);
                     showModal("✅ Cita seleccionada correctamente. Ya puedes generar la factura.");
+                });
+            
+                document.getElementById("generarFacturaBtn").addEventListener("click", async () => {
+                    const seleccion = document.querySelector("input[name='cita']:checked");
+                    if (!seleccion) {
+                        alert("Selecciona una cita primero para generar la factura.");
+                        return;
+                    }
+                    const citaId = seleccion.value;
+            
+                    try {
+                        const cita = await fetchData(`https://upb-taller-production.up.railway.app/citas/${citaId}`);
+            
+                        // Obtener detalles asociados
+                        const cliente = await fetchData(`https://upb-taller-production.up.railway.app/clientes/${cita.id_cliente}`);
+                        const carro = await fetchData(`https://upb-taller-production.up.railway.app/carros/${cita.id_carro}`);
+                        const servicio = await fetchData(`https://upb-taller-production.up.railway.app/servicios/${cita.id_servicio}`);
+            
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF();
+            
+                        // Logo (opcional)
+                        const logo = new Image();
+                        logo.src = "./Logo/Logo_Empresa.png";
+                        await new Promise((resolve) => (logo.onload = resolve));
+                        doc.addImage(logo, "PNG", 150, 5, 50, 50);
+            
+                        doc.setFontSize(18);
+                        doc.text("Factura de Cita", 10, 30);
+            
+                        doc.setFontSize(12);
+                        let y = 50;
+                        doc.text(`Cliente: ${cliente.nombre} (ID: ${cliente.id})`, 10, y);
+                        doc.text(`Teléfono: ${cliente.telefono}`, 10, y + 6);
+                        doc.text(`Dirección: ${cliente.direccion}`, 10, y + 12);
+            
+                        doc.text(`Carro: ${carro.marca} ${carro.modelo}`, 10, y + 20);
+                        doc.text(`Placa: ${carro.placa}`, 10, y + 26);
+            
+                        doc.text(`Servicio: ${servicio.nombre}`, 10, y + 34);
+                        doc.text(`Costo: $${cita.total}`, 10, y + 40);
+                        doc.text(`Duración: ${cita.duracion_total} minutos`, 10, y + 46);
+                        doc.text(`Fecha: ${new Date(cita.fecha).toLocaleString("es-CO")}`, 10, y + 52);
+            
+                        doc.save(`Factura_Cita_${citaId}.pdf`);
+                        document.getElementById("modal").style.display = "none"; // Cierra el modal
+                    } catch (err) {
+                        showModal("Error al generar la factura.");
+                        console.error(err);
+                    }
                 });
             }, 100);
         } catch (error) {
