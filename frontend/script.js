@@ -12,11 +12,17 @@ document.addEventListener("DOMContentLoaded", function () {
     calendar.render();
 
     async function fetchData(url) {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("Error fetching data");
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                console.error(`Error: status ${response.status}`);
+                return null; // Retorna null en vez de lanzar error
+            }
+            return await response.json();
+        } catch (error) {
+            console.error("Error en fetch:", error);
+            return null;
         }
-        return response.json();
     }
 
     async function mostrarCitasPorFecha(fecha) {
@@ -119,22 +125,23 @@ document.addEventListener("DOMContentLoaded", function () {
         showModal("Cita seleccionada correctamente. Ahora puedes generar la factura.");
     }
 
-    document.getElementById("getFacturas").addEventListener("click", async function () {
-        if (!citaSeleccionada) {
-            alert("Por favor selecciona una cita primero.");
+    document.getElementById("generarFactura").addEventListener("click", async () => {
+        const seleccion = document.querySelector("input[name='cita']:checked");
+        if (!seleccion) {
+            alert("Selecciona una cita");
             return;
         }
     
-        try {
-            const cita = await fetchData(`https://upb-taller-production.up.railway.app/citas/${citaSeleccionada}`);
-            // Aquí puedes generar la factura con los datos de esa cita
-            // Por ejemplo:
-            alert(`Generando factura para cita ID: ${cita.id}\nCliente: ${cita.id_cliente}\nServicio: ${cita.id_servicio}\nFecha: ${cita.fecha}`);
-            
-            // Aquí podrías abrir otro modal, generar PDF, redirigir, etc.
+        citaSeleccionada = parseInt(seleccion.value);
     
-        } catch (error) {
-            alert("Error al obtener la cita seleccionada.");
+        const cita = await fetchData(`https://upb-taller-production.up.railway.app/citas/${citaSeleccionada}`);
+    
+        if (cita) {
+            // Aquí va la lógica de generar factura (con jsPDF o lo que tengas)
+            showModal("✅ Factura generada con éxito");
+            closeModal(); // o modal.hide()
+        } else {
+            showModal("❌ Error al generar la factura.");
         }
     });
 
