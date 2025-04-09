@@ -130,6 +130,16 @@ def obtener_citas_por_cliente(id_cliente: int):
     db.close()
     return citas
 
+@app.get("/citas/fecha/{fecha}")
+def obtener_citas_por_fecha(fecha: str):
+    db = get_db_session()
+    citas = crud.obtener_citas_fecha(db, fecha)
+    if not citas:
+        db.close()
+        raise HTTPException(status_code=404, detail="No se encontraron citas para esta fecha")
+    db.close()
+    return citas
+
 # ---------------------- USUARIOS ----------------------
 @app.post("/usuarios/login")
 def login_usuario(usuario: schemas.UsuarioLogin):

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 from models import Cliente, Servicio, Cita, Carro
 from schemas import ClienteCreate, ServicioCreate, CitaCreate, ServicioSchema
 
@@ -55,6 +56,8 @@ def obtener_citas(db: Session):
 def obtener_citas_cliente(db: Session, id_cliente: int):
     return db.query(Cita).filter(Cita.id_cliente == id_cliente).all()
 
+def obtener_citas_fecha(db: Session, fecha: str):
+    return db.query(Cita).filter(func.date(Cita.fecha) == fecha).all()
 
 # ----- carros
 def obtener_carro_id(db: Session, id: int):
