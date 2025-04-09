@@ -59,6 +59,9 @@ def obtener_citas_cliente(db: Session, id_cliente: int):
 def obtener_citas_fecha(db: Session, fecha: str):
     return db.query(Cita).filter(func.date(Cita.fecha) == fecha).all()
 
+def obtener_cita_id(db: Session, id: int):
+    return db.query(Cita).filter(Cita.id == id).first()
+
 # ----- carros
 def obtener_carro_id(db: Session, id: int):
     return db.query(Carro).filter(Carro.id == id).first()
