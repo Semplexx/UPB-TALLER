@@ -53,14 +53,33 @@ document.addEventListener("DOMContentLoaded", function () {
     
             // Esperar a que el botón se cargue en el DOM y luego asignar evento
             setTimeout(() => {
-                document.getElementById("confirmarCitaSeleccionada").addEventListener("click", () => {
+                document.getElementById("generarFactura").addEventListener("click", async () => {
                     const seleccion = document.querySelector("input[name='cita']:checked");
                     if (!seleccion) {
                         alert("Selecciona una cita");
                         return;
                     }
+                
                     citaSeleccionada = parseInt(seleccion.value);
-                    showModal("✅ Cita seleccionada correctamente. Ya puedes generar la factura.");
+                
+                    const cita = await fetchData(`https://upb-taller-production.up.railway.app/citas/${citaSeleccionada}`);
+                    console.log(cita);
+            
+                    if (cita) {
+                        const servicio = await fetchData(`https://upb-taller-production.up.railway.app/servicios/${cita.id_servicio}`);
+                        if(servicio == 1){
+                            respuesta = await showPromptModal("Duración del servicio (en horas):");
+                            closePromptModal();
+                            return respuesta;
+                        }
+                        if(servicio == 2){
+                            respuesta = await showPromptModal("Kilometraje del carro:");
+                            closePromptModal();
+                            return respuesta; 
+                        }
+                    } else {
+                        showModal("❌ Error");
+                    }
                 });
             
                 document.getElementById("generarFacturaBtn").addEventListener("click", async () => {
@@ -117,35 +136,6 @@ document.addEventListener("DOMContentLoaded", function () {
             showModal("Error al obtener citas para esta fecha.");
         }
     }
-
-    document.getElementById("generarFactura").addEventListener("click", async () => {
-        const seleccion = document.querySelector("input[name='cita']:checked");
-        if (!seleccion) {
-            alert("Selecciona una cita");
-            return;
-        }
-    
-        citaSeleccionada = parseInt(seleccion.value);
-    
-        const cita = await fetchData(`https://upb-taller-production.up.railway.app/citas/${citaSeleccionada}`);
-        console.log(cita);
-
-        if (cita) {
-            const servicio = await fetchData(`https://upb-taller-production.up.railway.app/servicios/${cita.id_servicio}`);
-            if(servicio == 1){
-                respuesta = await showPromptModal("Duración del servicio (en horas):");
-                closePromptModal();
-                return respuesta;
-            }
-            if(servicio == 2){
-                respuesta = await showPromptModal("Kilometraje del carro:");
-                closePromptModal();
-                return respuesta; 
-            }
-        } else {
-            showModal("❌ Error");
-        }
-    });
 
     async function populateServices() {
         try {
