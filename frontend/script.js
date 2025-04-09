@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
             mensaje += `</ul>
                 <div style="margin-top: 15px; display: flex; gap: 10px;">
                     <button type="button" id="confirmarCitaSeleccionada">Seleccionar cita</button>
-                    <button type="button" id="generarFacturaBtn">Generar Factura</button>
+                    <button type="button" id="generarFactura">Generar Factura</button>
                 </div>
             </form>`;
 
