@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
         initialView: "dayGridMonth",
         events: "https://upb-taller-production.up.railway.app/citas/",
         dateClick: async function (info) {
-            consol.log("Fecha clickeada:", info.dateStr);
+            console.log("Fecha clickeada:", info.dateStr);
             await mostrarCitasPorFecha(info.dateStr);
         }
     });
