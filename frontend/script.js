@@ -45,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             mensaje += `</ul>
                 <div style="margin-top: 15px; display: flex; gap: 10px;">
-                    <button type="button" id="confirmarCitaSeleccionada">Seleccionar cita</button>
                     <button type="button" id="generarFactura">Generar Factura</button>
                 </div>
             </form>`;
@@ -118,12 +117,6 @@ document.addEventListener("DOMContentLoaded", function () {
             showModal("Error al obtener citas para esta fecha.");
         }
     }
-    
-
-    function seleccionarCita(id) {
-        citaSeleccionada = id;
-        showModal("Cita seleccionada correctamente. Ahora puedes generar la factura.");
-    }
 
     document.getElementById("generarFactura").addEventListener("click", async () => {
         const seleccion = document.querySelector("input[name='cita']:checked");
@@ -138,11 +131,19 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(cita);
 
         if (cita) {
-            // Aquí va la lógica de generar factura (con jsPDF o lo que tengas)
-            showModal("✅ Factura generada con éxito");
-            closeModal(); // o modal.hide()
+            const servicio = await fetchData(`https://upb-taller-production.up.railway.app/servicios/${cita.id_servicio}`);
+            if(servicio == 1){
+                respuesta = await showPromptModal("Duración del servicio (en horas):");
+                closePromptModal();
+                return respuesta;
+            }
+            if(servicio == 2){
+                respuesta = await showPromptModal("Kilometraje del carro:");
+                closePromptModal();
+                return respuesta; 
+            }
         } else {
-            showModal("❌ Error al generar la factura.");
+            showModal("❌ Error");
         }
     });
 
