@@ -140,7 +140,7 @@ def obtener_citas_por_fecha(fecha: str):
     db.close()
     return citas
 
-@app.get("/citas/id/{id}")
+@app.get("/citas/{id}")
 def obtener_cita_por_id(id: int):
     db = get_db_session()
     cita = crud.obtener_cita_id(db, id)
