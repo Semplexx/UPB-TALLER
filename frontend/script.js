@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const citas = await fetchData(`https://upb-taller-production.up.railway.app/citas/fecha/${fecha}`);
             if (citas.length === 0) {
-                alert("No hay citas para esta fecha");
+                showModal("No hay citas para esta fecha");
                 return;
             }
 
@@ -31,9 +31,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 mensaje += `\n- Cliente ID: ${cita.id_cliente}, Servicio ID: ${cita.id_servicio}, Hora: ${cita.fecha}`;
             }
 
-            alert(mensaje);
+            showModal(mensaje);
         } catch (error) {
-            alert("Error al obtener citas para esta fecha.");
+            showModal("Error al obtener citas para esta fecha.");
         }
     }
 
@@ -49,14 +49,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 serviceSelect.appendChild(option);
             });
         } catch (error) {
-            alert("Error al cargar los servicios");
+            showModal("Error al cargar los servicios");
         }
     }
 
     document.getElementById("searchClient").addEventListener("click", async function () {
         let clientId = document.getElementById("clientId").value.trim();
         if (!clientId) {
-            alert("Ingrese un ID de cliente válido.");
+            showModal("Ingrese un ID de cliente válido.");
             return;
         }
 
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("clientPhone").value = cliente.telefono;
             document.getElementById("clientAddress").value = cliente.direccion;
         } catch {
-            alert("Cliente no encontrado");
+            showModal("Cliente no encontrado");
             document.getElementById("clientName").value = "";
             document.getElementById("clientPhone").value = "";
             document.getElementById("clientAddress").value = "";
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("searchCar").addEventListener("click", async function () {
         let carPlate = document.getElementById("carPlate").value.trim();
         if (!carPlate) {
-            alert("Ingrese una placa válida.");
+            showModal("Ingrese una placa válida.");
             return;
         }
 
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("carBrand").value = carro.marca || "";
             document.getElementById("carId").value = carro.id || "";
         } catch {
-            alert("Carro no encontrado. Ingrese los datos para crear uno nuevo.");
+            showModal("Carro no encontrado. Ingrese los datos para crear uno nuevo.");
             document.getElementById("carModel").value = "";
             document.getElementById("carBrand").value = "";
         }
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let date = document.getElementById("date").value.trim();
 
             if (!clientName || !clientPhone || !clientAddress || !serviceId || !date) {
-                alert("Por favor, complete todos los campos obligatorios.");
+                showModal("Por favor, complete todos los campos obligatorios.");
                 return;
             }
 
@@ -160,10 +160,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 throw new Error(`Error al agendar la cita: ${errorMsg}`);
             }
 
-            alert("Cita agendada con éxito");
+            showModal("Cita agendada con éxito");
             calendar.refetchEvents();
         } catch (error) {
-            alert(error.message);
+            showModal(error.message);
         }
     });
 
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const citas = await response.json();
             
             if (citas.length === 0) {
-                alert("No hay citas registradas");
+                showModal("No hay citas registradas");
                 return;
             }
     
@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", function () {
             doc.save("reporte_citas.pdf");
         } catch (error) {
             console.error("Error al generar el reporte:", error);
-            alert("Hubo un problema al generar el reporte");
+            showModal("Hubo un problema al generar el reporte");
         }
     });
     
