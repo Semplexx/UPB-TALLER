@@ -1,5 +1,5 @@
+let citaSeleccionada = null;
 document.addEventListener("DOMContentLoaded", function () {
-    let citaSeleccionada = null;
     var calendarEl = document.getElementById("calendar");
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
@@ -27,22 +27,39 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
     
-            let html = `<h3>Citas para el ${fecha}</h3><ul>`;
+            let mensaje = `<h3>Citas para el ${fecha}</h3><form id="formCitas"><ul>`;
             for (const cita of citas) {
-                html += `
-                    <li>
-                        <button onclick="seleccionarCita(${cita.id})">
+                mensaje += `
+                    <li style="margin-bottom: 8px;">
+                        <input type="radio" name="cita" value="${cita.id}" id="cita-${cita.id}" />
+                        <label for="cita-${cita.id}">
                             Cliente ID: ${cita.id_cliente}, Servicio ID: ${cita.id_servicio}, Hora: ${cita.fecha}
-                        </button>
+                        </label>
                     </li>`;
             }
-            html += "</ul>";
+            mensaje += `</ul>
+                <button type="button" id="confirmarCitaSeleccionada">Seleccionar cita</button>
+            </form>`;
     
-            showModal(html);
+            showModal(mensaje);
+    
+            // Esperar a que el botón se cargue en el DOM y luego asignar evento
+            setTimeout(() => {
+                document.getElementById("confirmarCitaSeleccionada").addEventListener("click", () => {
+                    const seleccion = document.querySelector("input[name='cita']:checked");
+                    if (!seleccion) {
+                        alert("Selecciona una cita");
+                        return;
+                    }
+                    citaSeleccionada = parseInt(seleccion.value);
+                    showModal("✅ Cita seleccionada correctamente. Ya puedes generar la factura.");
+                });
+            }, 100);
         } catch (error) {
             showModal("Error al obtener citas para esta fecha.");
         }
     }
+    
 
     function seleccionarCita(id) {
         citaSeleccionada = id;
@@ -51,44 +68,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("getFacturas").addEventListener("click", async function () {
         if (!citaSeleccionada) {
-            showModal("Por favor, selecciona una cita primero desde el calendario.");
+            alert("Por favor selecciona una cita primero.");
             return;
         }
     
         try {
-            const response = await fetch(`https://upb-taller-production.up.railway.app/citas/${citaSeleccionada}`);
-            if (!response.ok) throw new Error("Error al obtener la cita seleccionada");
+            const cita = await fetchData(`https://upb-taller-production.up.railway.app/citas/${citaSeleccionada}`);
+            // Aquí puedes generar la factura con los datos de esa cita
+            // Por ejemplo:
+            alert(`Generando factura para cita ID: ${cita.id}\nCliente: ${cita.id_cliente}\nServicio: ${cita.id_servicio}\nFecha: ${cita.fecha}`);
+            
+            // Aquí podrías abrir otro modal, generar PDF, redirigir, etc.
     
-            const cita = await response.json();
-    
-            const clienteRes = await fetch(`https://upb-taller-production.up.railway.app/clientes/${cita.id_cliente}`);
-            const cliente = await clienteRes.json();
-    
-            const carroRes = await fetch(`https://upb-taller-production.up.railway.app/carros/${cita.id_carro}`);
-            const carro = await carroRes.json();
-    
-            const servicioRes = await fetch(`https://upb-taller-production.up.railway.app/servicios/${cita.id_servicio}`);
-            const servicio = await servicioRes.json();
-    
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-    
-            doc.setFontSize(18);
-            doc.text("Factura de Cita", 10, 20);
-            doc.setFontSize(12);
-            doc.text(`Cliente: ${cliente.nombre}`, 10, 40);
-            doc.text(`Teléfono: ${cliente.telefono}`, 10, 46);
-            doc.text(`Dirección: ${cliente.direccion}`, 10, 52);
-            doc.text(`Carro: ${carro.marca} ${carro.modelo} - Placa: ${carro.placa}`, 10, 64);
-            doc.text(`Servicio: ${servicio.nombre}`, 10, 76);
-            doc.text(`Costo: $${cita.total}`, 10, 82);
-            doc.text(`Fecha: ${cita.fecha}`, 10, 88);
-            doc.save("factura.pdf");
-    
-            citaSeleccionada = null; // limpiar selección
         } catch (error) {
-            console.error(error);
-            showModal("Error al generar la factura.");
+            alert("Error al obtener la cita seleccionada.");
         }
     });
 
