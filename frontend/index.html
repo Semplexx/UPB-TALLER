@@ -1,172 +1,172 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPB-Taller - Agenda de Citas</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Egypts Property-Taller - Agenda de Citas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+  <link rel="stylesheet" href="styles.css">
 
-    <header>
-        <h1>Egypts Property-Taller - Agenda de Citas</h1>
-    </header>
-
-    <main>
-        <div class="container">
-            <section class="form-container">
-                <h2>Agendar Cita</h2>
-                <form id="appointmentForm">
-                    <label for="clientId">ID Cliente (Cédula):</label>
-                    <input type="text" id="clientId" name="clientId" placeholder="Ingrese la cédula">
-                    <button type="button" id="searchClient">Buscar Cliente</button>
-
-                    <label for="clientName">Nombre:</label>
-                    <input type="text" id="clientName" name="clientName" placeholder="Nombre completo" readonly>
-
-                    <label for="clientPhone">Teléfono:</label>
-                    <input type="text" id="clientPhone" name="clientPhone" placeholder="Número de teléfono" readonly>
-
-                    <label for="clientAddress">Dirección:</label>
-                    <input type="text" id="clientAddress" name="clientAddress" placeholder="Dirección" readonly>
-
-                    <label for="carPlate">Placa del Carro:</label>
-                    <input type="text" id="carPlate" name="carPlate" placeholder="Ingrese la placa del carro">
-                    <button type="button" id="searchCar">Buscar Carro</button>
-
-                    <label for="carModel">Modelo del Carro:</label>
-                    <input type="text" id="carModel" name="carModel" placeholder="Ingrese el modelo del carro">
-
-                    <label for="carBrand">Marca del Carro:</label>
-                    <input type="text" id="carBrand" name="carBrand" placeholder="Ingrese la marca del carro">
-
-                    <input type="hidden" id="carId" name="carId">
-
-                    <label for="service">Servicio:</label>
-                    <select id="service" name="service">
-                        <!-- Se cargarán desde la API -->
-                    </select>
-
-                    <input type="hidden" id="total" name="total">
-                    <input type="hidden" id="duration" name="duration" value="30">
-
-                    <label for="date">Fecha:</label>
-                    <input type="datetime-local" id="date" name="date">
-
-                    <button type="submit">Agendar Cita</button>
-                </form>
-            </section>
-
-            <section class="calendar-container">
-                <h2>Disponibilidad del Taller</h2>
-                <div id="calendar"></div>
-                <button type="button" id="getCitas">Generar reporte de citas</button>
-            </section>
-
-        </div>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    <script src="script.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <!-- Modal personalizado mensaje -->
-<div id="customModal" class="modal">
-    <div class="modal-content">
-      <span class="close-button" onclick="closeModal()">&times;</span>
-      <p id="modalMessage"></p>
-    </div>
-  </div>
-  
-  <style>
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-  }
-  .modal-content {
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 20px;
-    width: 300px;
-    border-radius: 10px;
-    text-align: center;
-    position: relative;
-  }
-  .close-button {
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    font-size: 20px;
-    cursor: pointer;
-  }
-  </style>
-
-      <!-- Modal personalizado imput -->
-  <div id="promptModal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <p id="promptMessage"></p>
-      <input type="text" id="promptInput" placeholder="Escribe tu respuesta aquí">
-      <div style="margin-top: 10px;">
-        <button id="promptAccept">Aceptar</button>
-        <button id="promptCancel">Cancelar</button>
-      </div>
-    </div>
-  </div>
-  
   <style>
     .modal {
+      display: none;
       position: fixed;
+      z-index: 1000;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.5);
-      display: flex; justify-content: center; align-items: center;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center; align-items: center;
     }
+
     .modal-content {
-      background-color: white;
+      background-color: #fff;
       padding: 20px;
       border-radius: 10px;
       min-width: 300px;
-      box-shadow: 0 0 10px black;
       text-align: center;
+      box-shadow: 0 0 10px black;
+      position: relative;
     }
+
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
     #promptInput {
       width: 100%;
       padding: 8px;
       margin-top: 10px;
     }
   </style>
-  
+</head>
+
+<body>
+  <header>
+    <h1>Egypts Property-Taller - Agenda de Citas</h1>
+  </header>
+
+  <main>
+    <div class="container">
+      <!-- Formulario -->
+      <section class="form-container">
+        <h2>Agendar Cita</h2>
+        <form id="appointmentForm">
+          <label for="clientId">ID Cliente (Cédula):</label>
+          <input type="text" id="clientId" name="clientId" placeholder="Ingrese la cédula">
+          <button type="button" id="searchClient">Buscar Cliente</button>
+
+          <label for="clientName">Nombre:</label>
+          <input type="text" id="clientName" name="clientName" readonly>
+
+          <label for="clientPhone">Teléfono:</label>
+          <input type="text" id="clientPhone" name="clientPhone" readonly>
+
+          <label for="clientAddress">Dirección:</label>
+          <input type="text" id="clientAddress" name="clientAddress" readonly>
+
+          <label for="carPlate">Placa del Carro:</label>
+          <input type="text" id="carPlate" name="carPlate" placeholder="Ingrese la placa del carro">
+          <button type="button" id="searchCar">Buscar Carro</button>
+
+          <label for="carModel">Modelo del Carro:</label>
+          <input type="text" id="carModel" name="carModel">
+
+          <label for="carBrand">Marca del Carro:</label>
+          <input type="text" id="carBrand" name="carBrand">
+
+          <input type="hidden" id="carId" name="carId">
+
+          <label for="service">Servicio:</label>
+          <select id="service" name="service"></select>
+
+          <input type="hidden" id="total" name="total">
+          <input type="hidden" id="duration" name="duration" value="30">
+
+          <label for="date">Fecha:</label>
+          <input type="datetime-local" id="date" name="date">
+
+          <button type="submit">Agendar Cita</button>
+        </form>
+      </section>
+
+      <!-- Calendario -->
+      <section class="calendar-container">
+        <h2>Disponibilidad del Taller</h2>
+        <div id="calendar"></div>
+        <button type="button" id="getCitas">Generar reporte de citas</button>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modal de Mensaje -->
+  <div id="customModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal()">&times;</span>
+      <p id="modalMessage"></p>
+    </div>
+  </div>
+
+  <!-- Modal de Input Personalizado -->
+  <div id="promptModal" class="modal">
+    <div class="modal-content">
+      <p id="promptMessage"></p>
+      <input type="number" id="promptInput" placeholder="Escribe tu respuesta aquí" />
+      <div style="margin-top: 10px;">
+        <button onclick="confirmPrompt()">Aceptar</button>
+        <button onclick="closePromptModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script>
-  function showModal(message) {
-    document.getElementById('modalMessage').innerHTML = message;
-    document.getElementById('customModal').style.display = 'block';
-  }
+    function showModal(message) {
+      document.getElementById('modalMessage').innerHTML = message;
+      document.getElementById('customModal').style.display = 'flex';
+    }
 
-  function closeModal() {
-    document.getElementById('customModal').style.display = 'none';
-  }
+    function closeModal() {
+      document.getElementById('customModal').style.display = 'none';
+    }
 
-  function showPromptModal(message, callback) {
-    document.getElementById('promptMessage').innerHTML = message;
-    document.getElementById('promptModal').style.display = 'block';
-    document.getElementById('promptAccept').onclick = function() {
-      const inputValue = document.getElementById('promptInput').value;
-      callback(inputValue);
-      closePromptModal();
-    };
-    document.getElementById('promptCancel').onclick = closePromptModal;
-  }
+    let promptResolve = null;
 
-  function closePromptModal() {
-    document.getElementById('promptModal').style.display = 'none';
-    document.getElementById('promptInput').value = ''; // Limpiar el input
-  }
+    function showPromptModal(message) {
+      return new Promise((resolve) => {
+        promptResolve = resolve;
+        document.getElementById('promptMessage').innerText = message;
+        document.getElementById('promptInput').value = "";
+        document.getElementById('promptModal').style.display = 'flex';
+        document.getElementById('promptInput').focus();
+      });
+    }
+
+    function confirmPrompt() {
+      const value = document.getElementById("promptInput").value;
+      document.getElementById("promptModal").style.display = "none";
+      if (promptResolve) promptResolve(value);
+    }
+
+    function closePromptModal() {
+      document.getElementById("promptModal").style.display = "none";
+      if (promptResolve) promptResolve(null);
+    }
+
+    // Evitar cierre al hacer clic dentro del modal
+    document.querySelectorAll(".modal").forEach((modal) => {
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) closePromptModal();
+      });
+      modal.querySelector(".modal-content").addEventListener("click", (e) => e.stopPropagation());
+    });
   </script>
-  
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

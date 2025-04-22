@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </form>`;
 
             showModal(mensaje);
+
     
             // Esperar a que el botón se cargue en el DOM y luego asignar evento
             setTimeout(() => {
@@ -63,24 +64,63 @@ document.addEventListener("DOMContentLoaded", function () {
                     citaSeleccionada = parseInt(seleccion.value);
                 
                     const cita = await fetchData(`https://upb-taller-production.up.railway.app/citas/${citaSeleccionada}`);
-                    console.log(cita);
-            
-                    if (cita) {
-                        const servicio = await fetchData(`https://upb-taller-production.up.railway.app/servicios/${cita.id_servicio}`);
-                        if(servicio == 1){
-                            respuesta = await showPromptModal("Duración del servicio (en horas):");
-                            closePromptModal();
-                            return respuesta;
-                        }
-                        if(servicio == 2){
-                            respuesta = await showPromptModal("Kilometraje del carro:");
-                            closePromptModal();
-                            return respuesta; 
-                        }
-                    } else {
+                    if (!cita) {
                         showModal("❌ Error");
+                        return;
                     }
+                
+                    const servicio = await fetchData(`https://upb-taller-production.up.railway.app/servicios/${cita.id_servicio}`);
+                    if (!servicio) {
+                        showModal("❌ Error al obtener el servicio");
+                        return;
+                    }
+                
+                    let valorUsuario = 1;
+                    if (servicio.id == 1) {
+                        valorUsuario = await showPromptModal("Duración del servicio (en horas):");
+                    } else if (servicio.id == 2) {
+                        valorUsuario = await showPromptModal("Kilometraje del carro:");
+                    }
+                
+                    closePromptModal();
+                    const total = valorUsuario * servicio.costo;
+                    const totalIva = total * 1.19
+                    console.log(total)
+                
+                    // Obtener datos del cliente y carro
+                    const cliente = await fetchData(`https://upb-taller-production.up.railway.app/clientes/${cita.id_cliente}`);
+                    const carro = await fetchData(`https://upb-taller-production.up.railway.app/carros/${cita.id_carro}`);
+                
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                
+                    // Logo
+                    const logo = new Image();
+                    logo.src = "./Logo/Logo_Empresa.png";
+                    await new Promise((resolve) => logo.onload = resolve);
+                    doc.addImage(logo, "PNG", 150, 5, 50, 50);
+                
+                    doc.setFontSize(22);
+                    doc.text("Factura de Servicio", 10, 30);
+                    doc.setFontSize(12);
+                
+                    let y = 50;
+                    doc.text(`Cliente: ${cliente?.nombre ?? "Desconocido"} (ID: ${cita.id_cliente})`, 10, y);
+                    doc.text(`Teléfono: ${cliente?.telefono ?? "N/A"} - Dirección: ${cliente?.direccion ?? "N/A"}`, 10, y + 6);
+                    doc.text(`Carro: ${carro?.marca ?? "N/A"} ${carro?.modelo ?? "N/A"} - Placa: ${carro?.placa ?? "N/A"}`, 10, y + 12);
+                    doc.text(`Servicio: ${servicio.nombre}`, 10, y + 18);
+                    doc.text(`Costo unitario: $${servicio.costo}`, 10, y + 24);
+                
+                    const unidad = (servicio.id == 1) ? "horas" : (servicio.id == 2) ? "km" : "unidad";
+                    doc.text(`Cantidad (${unidad}): ${valorUsuario}`, 10, y + 30);
+                    doc.text(`Subtotal a pagar: $${total.toFixed(2)}`, 10, y + 36);
+                    doc.text(`Total a pagar: $${totalIva.toFixed(2)}`, 10, y + 42);
+                    doc.text(`Fecha de la cita: ${cita.fecha}`, 10, y + 48);
+                
+                    doc.save(`factura_cita_${citaSeleccionada}.pdf`);
                 });
+                
+                
             }, 100);
         } catch (error) {
             showModal("Error al obtener citas para esta fecha.");
@@ -282,5 +322,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
     
-    
+
 });
